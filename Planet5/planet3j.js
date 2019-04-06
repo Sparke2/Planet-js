@@ -112,6 +112,7 @@ function generatePlanet(planet)
 
 function initWorld (planet)
 {
+  generatePlanet(planet);
   var bacteria = {};
   planet.lifeforms = new Array();
   // first bacteria
@@ -144,6 +145,7 @@ function displayPlanetAtElement(planet, element_id)
   toHTML += "" + "<table>" + "---------------------------------------------------------------------------------------------" + "</table>";
   toHTML += "" + "<table>" + "Planet " + "  " + "</table>";
   toHTML += "" + "<table>" + "planet.mass: " + planet.mass + "</table>";
+  toHTML += "" + "<table>" + "planet.volume: " + planet.volume + "</table>";
   toHTML += "" + "<table>" + "G: " + planet.g + "</table>";
   toHTML += "" + "<table>" + "planet.atmosphere: " + planet.atmosphere + "</table>";
   toHTML += "" + "<table>" + "planet.water: " + planet.water + "</table>";
@@ -194,7 +196,7 @@ function displayPlanetAtElement(planet, element_id)
     toHTML += "" + "<table>" + "----------" + "</table>";
   }
 
-  document.getElementById(element_id).innerHTML += toHTML;
+  document.getElementById(element_id).innerHTML = toHTML;
 }
 
 
@@ -262,7 +264,7 @@ function generateBacteria(planet, lifeForm, compatibility_probability)
 {
   //alert("start");
   lifeForm.type = 0; // Bacteria type
-  if(randomInteger(1,100)>compatibility_probability)
+  if(randomInteger(1,100) > compatibility_probability)
   {
 
     // Generate absolutely random characteristics
@@ -272,8 +274,10 @@ function generateBacteria(planet, lifeForm, compatibility_probability)
     a = randomInteger(150,600);
     lifeForm.temMax = lifeForm.temMin + a;
     lifeForm.mass = randomInteger(1,250) + randomInteger(0,250) + randomInteger(0,250) + randomInteger(0,250); // in kg^-13
-    lifeForm.radiationMin = 0;
-    lifeForm.radiationMax = lifeForm.radiationMin + randomInteger(3,15);
+    lifeForm.radiationMin = randomInteger(0,100);
+    lifeForm.radiationMin = lifeForm.radiationMin / 100;
+    lifeForm.radiationMax = lifeForm.radiationMin * 100 + randomInteger(300,1500);
+    lifeForm.radiationMax = lifeForm.radiationMax / 100;
     if (lifeForm.radiationMax > 10) 
     {
       lifeForm.radiationMax = 10;
@@ -320,34 +324,41 @@ function generateBacteria(planet, lifeForm, compatibility_probability)
     lifeForm.food_dead_plant = randomInteger(0,1);
     lifeForm.food_dead_animal = randomInteger(0,1);
     lifeForm.food_dead_humanoid = randomInteger(0,1);
+
+    if(lifeForm.food_none == lifeForm.food_dead_plant == lifeForm.food_dead_animal == lifeForm.food_dead_humanoid == lifeForm.food_water == lifeForm.food_light == lifeForm.food_bacteria == lifeForm.food_animal == lifeForm.food_plant == lifeForm.food_humanoid == 0 )
+    {
+      lifeForm.food_none = 1;
+      lifeForm.food_plant = 1;
+      lifeForm.food_water = randomInteger(0,1);
+      lifeForm.food_light = randomInteger(0,1);
+    }
   }
   else
   {
     // Generate semi-random characteristics
     // depending on the environmental values.
 
-    var variation = randomInteger(-40,25);
-    lifeForm.temMin = planet.temMin + variation;
+    var variation = randomInteger(0,50) + randomInteger(0,50);
+    lifeForm.temMin = planet.temMin + variation - 50;
     if (lifeForm.temMin<0)
     {
       lifeForm.temMin = 0;
     }
-    lifeForm.temMax = planet.temMax + randomInteger(-25,40);
+    lifeForm.temMax = planet.temMax + randomInteger(0,50) + randomInteger(0,50) - 50;
     if ((lifeForm.temMax-lifeForm.temMin)<100)
     {
       lifeForm.temMax = lifeForm.temMin + 100;
     }
     lifeForm.mass = randomInteger(1,250) + randomInteger(0,250) + randomInteger(0,250) + randomInteger(0,250); // in kg^-13
-    
-    variation = randomInteger(-0.2,0.2);
-    lifeForm.radiationMin = planet.radiationMin + variation;
+
+    lifeForm.radiationMin = (planet.radiation * 100 + randomInteger(0,250)) - 175;
+    lifeForm.radiationMin = lifeForm.radiationMin / 100;
     if (lifeForm.radiationMin < 0)
     {
       lifeForm.radiationMin = 0;
     }
-    variation = randomInteger(-0.2,0.2);
-    lifeForm.radiationMax = planet.radiationMax + variation;
-    if (lifeForm.radiationMin > 10)
+    lifeForm.radiationMax = planet.radiation + (variation - 20)/10;
+    if (lifeForm.radiationMax > 10)
     {
       lifeForm.radiationMin = 10;
     }
