@@ -1,0 +1,4 @@
+function generateHumanoid(planet, lifeForm)
+{
+
+}

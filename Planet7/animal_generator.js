@@ -1,0 +1,4 @@
+function generateAnimal(planet, lifeForm)
+{
+
+}
